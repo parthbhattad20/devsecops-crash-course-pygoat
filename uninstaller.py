@@ -131,7 +131,7 @@ def main():
 
     print(colorama.Back.RED + colorama.Style.BRIGHT + "Uninstallations Done!" + colorama.Style.RESET_ALL)
 
-    # Restore output streams to their original values
+    # Restore output streams to their original values vulnuris
     colorama.deinit()
 
 
