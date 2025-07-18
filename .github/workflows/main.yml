@@ -66,6 +66,8 @@ jobs:
         push: false
         tags: myapp:latest
         load: true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
         
     - name: Docker Scout Scan
       uses: docker/scout-action@v1.13.0
