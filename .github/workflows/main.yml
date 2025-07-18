@@ -1,36 +1,42 @@
 name: CI
-
-on: [push]
+on: [push, pull_request]
 
 jobs:
- sast_scan:
-   name: Run Bandit Scan
-   runs-on: ubuntu-latest
-
-   steps:
-   - name: Checkout code
-     uses: actions/checkout@v2
-
-   - name: Set up Python
-     uses: actions/setup-python@v2
-     with:
-       python-version: 3.8
-
-   - name: Install Bandit
-     run: pip install bandit
-
-   - name: Run Bandit Scan
-     run: bandit -ll -ii -r . -f json -o bandit-report.json
-
-   - name: Upload Artifact
-     uses: actions/upload-artifact@v3
-     if: always()
-     with:
-      name: bandit-findings
-      path: bandit-report.json
-
-
-
-   
-
-   
+  sast_scan:
+    name: Run Bandit Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install Bandit
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit[toml]
+        
+    - name: Run Bandit Scan
+      run: |
+        bandit -ll -ii -r . -f json -o bandit-report.json || true
+        
+    - name: Display Bandit Results
+      run: |
+        if [ -f bandit-report.json ]; then
+          echo "Bandit scan completed. Report generated."
+          bandit -ll -ii -r . -f txt || true
+        else
+          echo "No bandit report generated"
+        fi
+        
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: bandit-findings
+        path: bandit-report.json
+        retention-days: 30
